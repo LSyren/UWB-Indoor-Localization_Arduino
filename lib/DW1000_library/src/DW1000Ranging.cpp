@@ -89,7 +89,7 @@ void (* DW1000RangingClass::_handleInactiveDevice)(DW1000Device*) = 0;
  * #### Init and end #######################################################
  * ######################################################################### */
 
-void DW1000RangingClass::initCommunication(uint8_t myRST, uint8_t mySS, uint8_t myIRQ) {
+void DW1000RangingClass::initCommunication(uint8_t myRST, uint8_t mySS, uint8_t myIRQ, uint8_t myMOSI, uint8_t myMISO, uint8_t myCLK)  {
 	// reset line to the chip
 	_RST              = myRST;
 	_SS               = mySS;
@@ -100,7 +100,7 @@ void DW1000RangingClass::initCommunication(uint8_t myRST, uint8_t mySS, uint8_t 
 	_timerDelay       = DEFAULT_TIMER_DELAY;
 	
 	
-	DW1000.begin(myIRQ, myRST);
+	DW1000.begin(myIRQ, myRST, myMISO, myMOSI, myCLK);
 	DW1000.select(mySS);
 }
 

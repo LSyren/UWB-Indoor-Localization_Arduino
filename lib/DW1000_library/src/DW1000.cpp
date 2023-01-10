@@ -165,9 +165,18 @@ void DW1000Class::reselect(uint8_t ss) {
 	digitalWrite(_ss, HIGH);
 }
 
-void DW1000Class::begin(uint8_t irq, uint8_t rst) {
+void DW1000Class::begin(uint8_t irq, uint8_t rst, uint8_t miso, uint8_t mosi, uint8_t clk) {
 	// generous initial init/wake-up-idle delay
 	delay(5);
+	SPI.setMISO(miso);
+	SPI.setMOSI(mosi);
+	SPI.setSCLK(clk);
+	Serial.print("miso: ");
+	Serial.println(miso);
+	Serial.print("mosi: ");
+	Serial.println(mosi);
+	Serial.print("clk: ");
+	Serial.println(clk);
 	// Configure the IRQ pin as INPUT. Required for correct interrupt setting for ESP8266
     	pinMode(irq, INPUT);
 	// start SPI

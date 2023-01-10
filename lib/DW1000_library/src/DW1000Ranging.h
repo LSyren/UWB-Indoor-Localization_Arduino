@@ -67,7 +67,7 @@
 
 //debug mode
 #ifndef DEBUG
-#define DEBUG false
+#define DEBUG true
 #endif
 
 
@@ -78,7 +78,7 @@ public:
 	static byte data[LEN_DATA];
 	
 	//initialisation
-	static void    initCommunication(uint8_t myRST = DEFAULT_RST_PIN, uint8_t mySS = DEFAULT_SPI_SS_PIN, uint8_t myIRQ = 2);
+	static void    initCommunication(uint8_t myRST = DEFAULT_RST_PIN, uint8_t mySS = DEFAULT_SPI_SS_PIN, uint8_t myIRQ = 2, uint8_t myMOSI = 3, uint8_t myMISO = 4, uint8_t myCLK = 5);
 	static void    configureNetwork(uint16_t deviceAddress, uint16_t networkId, const byte mode[]);
 	static void    generalStart();
 	static void    startAsAnchor(char address[], const byte mode[], const bool randomShortAddress = true);
