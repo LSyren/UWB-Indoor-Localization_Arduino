@@ -16,54 +16,34 @@
 #include "DW1000Ranging.h"
 #include "DW1000.h"
 
-// ESP32_UWB pin definitions
+// BluePill pin definitions
 
-#define SPI_SCK 18
-#define SPI_MISO 19
-#define SPI_MOSI 23
-#define DW_CS 4
+#define SPI_SCK PB13
+#define SPI_MISO PB14
+#define SPI_MOSI PB15
 
 // connection pins
-const uint8_t PIN_RST = 27; // reset pin
-const uint8_t PIN_IRQ = 34; // irq pin
-const uint8_t PIN_SS = 4;   // spi select pin
+const uint8_t PIN_RST = PA12; // reset pin
+const uint8_t PIN_IRQ = PA11; // irq pin
+const uint8_t PIN_SS = PB12;   // spi select pin
 
 
-char this_anchor_addr[] = "84:00:22:EA:82:60:3B:9C";
-float this_anchor_target_distance = 296*0.0254; //measured distance to anchor in m
+char this_anchor_addr[] = "81:00:22:EA:82:60:3B:9C";
+float this_anchor_target_distance = 9.0; //measured distance to anchor in m
 
 uint16_t this_anchor_Adelay = 16600; //starting value
 uint16_t Adelay_delta = 100; //initial binary search step size
 
-
-void setup()
+void newDevice(DW1000Device *device)
 {
-  Serial.begin(115200);
-  while (!Serial);
-  //init the configuration
-  SPI.begin(SPI_SCK, SPI_MISO, SPI_MOSI);
-  DW1000Ranging.initCommunication(PIN_RST, PIN_SS, PIN_IRQ); //Reset, CS, IRQ pin
-
-
-  Serial.print("Starting Adelay "); Serial.println(this_anchor_Adelay);
-  Serial.print("Measured distance "); Serial.println(this_anchor_target_distance);
-  
-  DW1000.setAntennaDelay(this_anchor_Adelay);
-
-  DW1000Ranging.attachNewRange(newRange);
-  DW1000Ranging.attachNewDevice(newDevice);
-  DW1000Ranging.attachInactiveDevice(inactiveDevice);
-  //Enable the filter to smooth the distance
-  //DW1000Ranging.useRangeFilter(true);
-
-  //start the module as anchor, don't assign random short address
-  DW1000Ranging.startAsAnchor(this_anchor_addr, DW1000.MODE_LONGDATA_RANGE_LOWPOWER, false);
-
+  Serial.print("Device added: ");
+  Serial.println(device->getShortAddress(), HEX);
 }
 
-void loop()
+void inactiveDevice(DW1000Device *device)
 {
-  DW1000Ranging.loop();
+  Serial.print("delete inactive device: ");
+  Serial.println(device->getShortAddress(), HEX);
 }
 
 void newRange()
@@ -101,14 +81,32 @@ void newRange()
   DW1000.setAntennaDelay(this_anchor_Adelay);
 }
 
-void newDevice(DW1000Device *device)
+void setup()
 {
-  Serial.print("Device added: ");
-  Serial.println(device->getShortAddress(), HEX);
+  Serial.begin(115200);
+  while (!Serial);
+  //init the configuration
+  SPI.begin();
+  DW1000Ranging.initCommunication(PIN_RST, PIN_SS, PIN_IRQ, SPI_MOSI, SPI_MISO, SPI_SCK); //Reset, CS, IRQ pin
+
+
+  Serial.print("Starting Adelay "); Serial.println(this_anchor_Adelay);
+  Serial.print("Measured distance "); Serial.println(this_anchor_target_distance);
+  
+  DW1000.setAntennaDelay(this_anchor_Adelay);
+
+  DW1000Ranging.attachNewRange(newRange);
+  DW1000Ranging.attachNewDevice(newDevice);
+  DW1000Ranging.attachInactiveDevice(inactiveDevice);
+  //Enable the filter to smooth the distance
+  //DW1000Ranging.useRangeFilter(true);
+
+  //start the module as anchor, don't assign random short address
+  DW1000Ranging.startAsAnchor(this_anchor_addr, DW1000.MODE_LONGDATA_RANGE_LOWPOWER, false);
+
 }
 
-void inactiveDevice(DW1000Device *device)
+void loop()
 {
-  Serial.print("delete inactive device: ");
-  Serial.println(device->getShortAddress(), HEX);
+  DW1000Ranging.loop();
 }
